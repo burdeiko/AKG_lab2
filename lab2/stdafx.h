@@ -9,7 +9,8 @@
 
 #include <stdio.h>
 #include <tchar.h>
-
+#include "SDL.h"
+#include <math.h>
 
 
 // TODO: reference additional headers your program requires here
