@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#define N 4
+#define N 3
 #define ANGLE_OF_POLYGON 2 * M_PI / N
 
 void DrawRect(SDL_Renderer *renderer, int x0, int y0, int width, double f);
@@ -19,7 +19,7 @@ int main()
 	int x = 300 - width / 2;
 	double deltaWidth = sqrt(m * m + (1 - m) * (1 - m) + 2 * m * (1 - m) * cos(ANGLE_OF_POLYGON));
 	double deltaF = asin(m * width * sin(ANGLE_OF_POLYGON) / (width * deltaWidth));
-	while (f < M_PI /4 )
+	while (f < M_PI  )
 	{
 		DrawRect(renderer, x, y, width, f);
 		x += roundl(m * width * cos(f));
