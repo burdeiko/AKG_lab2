@@ -12,5 +12,11 @@
 #include "SDL.h"
 #include <math.h>
 
+SDL_Point* GetFirstPolygon();
+void DrawPolygon(SDL_Renderer *renderer, SDL_Point *points);
+void DrawLine(SDL_Renderer *renderer, int x1, int y1, int x2, int y2);
+void GetNextPolygon(SDL_Point *points);
+
+
 
 // TODO: reference additional headers your program requires here

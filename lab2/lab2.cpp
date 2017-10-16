@@ -3,30 +3,21 @@
 
 #include "stdafx.h"
 #define N 3
-#define ANGLE_OF_POLYGON 2 * M_PI / N
+#define K 0.1
 
-void DrawRect(SDL_Renderer *renderer, int x0, int y0, int width, double f);
 int main()
 {
-	double angle = ANGLE_OF_POLYGON;
 	SDL_Window *window = SDL_CreateWindow("lab2", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 600, 600, 0);
 	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-	double m = 0.1;	
-	double f = 0;	
-	int width = 1600 / N;
-	int y = 500;
-	int x = 300 - width / 2;
-	double deltaWidth = sqrt(m * m + (1 - m) * (1 - m) + 2 * m * (1 - m) * cos(ANGLE_OF_POLYGON));
-	double deltaF = asin(m * width * sin(ANGLE_OF_POLYGON) / (width * deltaWidth));
-	while (f < M_PI  )
+
+	SDL_Point *points = GetFirstPolygon();
+	for (int i = 0; i < 10; i++)
 	{
-		DrawRect(renderer, x, y, width, f);
-		x += roundl(m * width * cos(f));
-		y -= roundl(m * width * sin(f));
-		width = roundl(width * deltaWidth);
-		f += deltaF;
+		DrawPolygon(renderer, points);
+		GetNextPolygon(points);
 	}
+
 	SDL_RenderPresent(renderer);
 	while (1)
 	{
@@ -34,24 +25,51 @@ int main()
 		if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
 			break;
 	}
-    return 0;
+	return 0;
 }
 
-void DrawRect(SDL_Renderer *renderer, int x0, int y0, int width, double f)
+SDL_Point* GetFirstPolygon()
 {
-	int n = N;
-	int x = x0;
-	int y = y0;
-	
-	for (int i = 0; i < n; i++)
+	SDL_Point *points = (SDL_Point*)malloc(sizeof(SDL_Point) * N);
+	double f = 0;
+	int width = 1600 / N;
+	int y = 500;
+	int x = 300 - width / 2;
+	for (int i = 0; i < N; i++)
 	{
 		int newX = roundl(x + width * cos(f));
 		int newY = roundl(y - width * sin(f));
-		SDL_RenderDrawLine(renderer, x, y, newX, newY);
+		points[i].x = x;
+		points[i].y = y;
 		x = newX;
 		y = newY;
-		f += 2 * M_PI / n;
+		f += 2 * M_PI / N;
 	}
-	
+	return points;
+}
+
+void DrawPolygon(SDL_Renderer *renderer, SDL_Point *points)
+{
+	for (int i = 0; i < N; i++)
+	{
+		DrawLine(renderer, points[i].x, points[i].y, points[(i + 1) % N].x, points[(i + 1) % N].y);
+	}
+}
+
+void DrawLine(SDL_Renderer *renderer, int x1, int y1, int x2, int y2)
+{
+	SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+}
+
+void GetNextPolygon(SDL_Point *points)
+{
+	SDL_Point initialPoint = points[0];
+	for (int i = 0; i < N - 1; i++)
+	{
+		points[i].x += roundl((points[i + 1].x - points[i].x) * K);
+		points[i].y += roundl((points[i + 1].y - points[i].y) * K);
+	}
+	points[N - 1].x += roundl((initialPoint.x - points[N - 1].x) * K);
+	points[N - 1].y += roundl((initialPoint.y - points[N - 1].y) * K);
 }
 
